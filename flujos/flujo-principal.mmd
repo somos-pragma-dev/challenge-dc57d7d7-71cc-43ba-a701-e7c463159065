@@ -1,0 +1,157 @@
+flowchart TD
+    subgraph INICIO["Punto de Entrada"]
+        A1["Pantalla de Bienvenida"] --> A2["Botón 'Abrir Cuenta'"]
+    end
+
+    subgraph REGISTRO["Fase 1: Registro Inicial"]
+        B1["Pantalla de Registro"] --> B2["Campo: Correo Electrónico"]
+        B2 --> B3["Campo: Contraseña"]
+        B3 --> B4["Campo: Confirmar Contraseña"]
+        B4 --> B5["Checkbox: Términos y Condiciones"]
+        B5 --> B6{"Validación de Criterios"}
+        B6 -->|Correo válido| C1
+        B6 -->|Correo inválido| E1["Mensaje de Error: Correo inválido"]
+        B6 -->|Contraseña débil| E2["Mensaje de Error: La contraseña debe tener al menos 8 caracteres, una mayúscula y un número"]
+        B6 -->|Términos no aceptados| E3["Mensaje de Error: Debe aceptar los términos y condiciones"]
+        E1 --> B2
+        E2 --> B3
+        E3 --> B5
+    end
+
+    subgraph VERIFICACION_IDENTIDAD["Fase 2: Verificación de Identidad (KYC)"]
+        C1["Pantalla: Verificación de Identidad"] --> C2["Captura de Foto de INE/ID"]
+        C2 --> C3["Captura de Selfie con verificación biométrica"]
+        C3 --> C4["Validación de Documento por IA"]
+        C4 --> C5{"Resultado de Verificación"}
+        C5 -->|Verificación exitosa| D1
+        C5 -->|Documento no legible| E4["Pantalla de Error: Documento no legible. Por favor, tome una foto más clara"]
+        C5 -->|Biometría no coincide| E5["Pantalla de Error: La biometricía no coincide con el documento"]
+        C5 -->|Tiempo de espera agotado| E6["Pantalla de Error: Tiempo de verificación agotado. Intente de nuevo"]
+        E4 --> C2
+        E5 --> C3
+        E6 --> C1
+    end
+
+    subgraph DATOS_PERSONALES["Fase 3: Datos Personales"]
+        D1["Pantalla: Datos Personales"] --> D2["Campo: Nombre(s)"]
+        D2 --> D3["Campo: Apellido Paterno"]
+        D3 --> D4["Campo: Apellido Materno"]
+        D4 --> D5["Campo: Fecha de Nacimiento"]
+        D5 --> D6["Campo: Género"]
+        D6 --> D7["Campo: Nacionalidad"]
+        D7 --> D8["Campo: CURP"]
+        D8 --> D9["Campo: RFC"]
+        D9 --> D10{"Validación de Datos"}
+        D10 -->|Datos válidos| F1
+        D10 -->|CURP inválido| E7["Error: CURP no válido"]
+        D10 -->|RFC inválido| E8["Error: RFC no válido"]
+        D10 -->|Menor de edad| E9["Error: Debes ser mayor de 18 años para abrir una cuenta"]
+        D10 -->|Campos vacíos| E10["Error: Todos los campos son obligatorios"]
+        E7 --> D2
+        E8 --> D9
+        E9 --> D5
+        E10 --> D2
+    end
+
+    subgraph DATOS_CONTACTO["Fase 4: Datos de Contacto"]
+        F1["Pantalla: Datos de Contacto"] --> F2["Campo: Calle"]
+        F2 --> F3["Campo: Número Exterior"]
+        F3 --> F4["Campo: Número Interior"]
+        F4 --> F5["Campo: Colonia"]
+        F5 --> F6["Campo: Ciudad"]
+        F6 --> F7["Campo: Estado"]
+        F7 --> F8["Campo: Código Postal"]
+        F8 --> F9["Campo: Teléfono Móvil"]
+        F9 --> F10["Campo: Teléfono Fijo (Opcional)"]
+        F10 --> F11{"Validación de Dirección"}
+        F11 -->|Dirección válida| G1
+        F11 -->|CP no encontrado| E11["Error: Código postal no encontrado en nuestra base de datos"]
+        F11 -->|Teléfono inválido| E12["Error: Formato de teléfono inválido"]
+        E11 --> F2
+        E12 --> F9
+    end
+
+    subgraph SELECCION_CUENTA["Fase 5: Selección de Tipo de Cuenta"]
+        G1["Pantalla: Selección de Cuenta"] --> G2["Opción 1: Cuenta Básica (sin fees mensuales)"]
+        G1 --> G3["Opción 2: Cuenta Premium (beneficios adicionales)"]
+        G1 --> G4["Opción 3: Cuenta de Nómina (descuento directo de nómina)"]
+        G2 --> G5{"Confirmación de Selección"}
+        G3 --> G5
+        G4 --> G5
+        G5 -->|Usuario selecciona| H1
+    end
+
+    subgraph SEGURIDAD["Fase 6: Configuración de Seguridad"]
+        H1["Pantalla: Configuración de Seguridad"] --> H2["Establecer PIN de 4 dígitos"]
+        H2 --> H3["Confirmar PIN de 4 dígitos"]
+        H3 --> H4["Habilitar Biometría (Huella/Face ID)"]
+        H4 --> H5["Configurar preguntas de seguridad"]
+        H5 --> H6{"Validación de Seguridad"}
+        H6 -->|PINs coinciden| I1
+        H6 -->|PINs no coinciden| E13["Error: Los PINs no coinciden. Intente de nuevo"]
+        H6 -->|Biometría no disponible| E14["Error: Biometría no disponible en este dispositivo"]
+        E13 --> H2
+        E14 --> H4
+    end
+
+    subgraph REVISION["Fase 7: Revisión de Información"]
+        I1["Pantalla: Resumen de Solicitud"] --> I2["Sección: Datos Personales"]
+        I2 --> I3["Sección: Datos de Contacto"]
+        I3 --> I4["Sección: Tipo de Cuenta"]
+        I4 --> I5["Sección: Configuración de Seguridad"]
+        I5 --> I6{"Usuario Revisa Información"}
+        I6 -->|Información correcta| J1
+        I6 -->|Información incorrecta| I7["Botón: Editar"]
+        I7 -->|Editar datos personales| D1
+        I7 -->|Editar contacto| F1
+        I7 -->|Editar tipo de cuenta| G1
+    end
+
+    subgraph CONFIRMACION["Fase 8: Confirmación y Activación"]
+        J1["Pantalla: Confirmación Final"] --> J2["Botón: Confirmar y Enviar Solicitud"]
+        J2 --> J3["Procesamiento de Solicitud (Loading)"]
+        J3 --> J4{"Resultado del Procesamiento"}
+        J4 -->|Solicitud aprobada| K1["Pantalla: Éxito - Cuenta Creada"]
+        J4 -->|Solicitud en revisión| K2["Pantalla: Estado Pendiente - Revisión manual requerida"]
+        J4 -->|Solicitud rechazada| K3["Pantalla: Solicitud Rechazada"]
+        K1 --> K4["Envío de Correo de Confirmación"]
+        K2 --> K5["Envío de Correo con Código de Seguimiento"]
+        K3 --> K6["Envío de Correo con Motivo de Rechazo"]
+        K4 --> K7["Acceso a Banca Móvil"]
+        K5 --> K7
+        K6 --> K8["Botón: Contactar Soporte"]
+    end
+
+    A2 --> B1
+    C1 --> D1
+    D10 --> F1
+    F11 --> G1
+    G5 --> H1
+    H6 --> I1
+
+    style A1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style B1 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style C1 fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style D1 fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style F1 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style G1 fill:#e0f7fa,stroke:#00838f,stroke-width:2px
+    style H1 fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    style I1 fill:#efebe9,stroke:#4e342e,stroke-width:2px
+    style J1 fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    style K1 fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
+    style K2 fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+    style K3 fill:#ffcdd2,stroke:#c62828,stroke-width:2px
+    style E1 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E2 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E3 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E4 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E5 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E6 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E7 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E8 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E9 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E10 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E11 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E12 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E13 fill:#ffebee,stroke:#c62828,stroke-width:1px
+    style E14 fill:#ffebee,stroke:#c62828,stroke-width:1px

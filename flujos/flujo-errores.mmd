@@ -1,0 +1,199 @@
+flowchart TD
+    subgraph ESCENARIOS_ERROR["Escenarios de Error - Apertura de Cuenta"]
+        
+        subgraph ERRORES_REGISTRO["Errores en Fase de Registro"]
+            ER1["Usuario intenta registrarse"] --> ER2{"Validar Correo Electrónico"}
+            ER2 -->|Correo ya existe| ERA["Error: Este correo ya está registrado. ¿Desea iniciar sesión o recuperar contraseña?"]
+            ER2 -->|Formato inválido| ERB["Error: Ingrese un correo electrónico válido (ej: usuario@dominio.com)"]
+            ER2 -->|Dominio bloqueado| ERC["Error: Este dominio de correo no está permitido"]
+            
+            ER1 --> ER3{"Validar Contraseña"}
+            ER3 -->|Menos de 8 caracteres| ERD["Error: La contraseña debe tener al menos 8 caracteres"]
+            ER3 -->|Sin mayúscula| ERE["Error: La contraseña debe contener al menos una letra mayúscula"]
+            ER3 -->|Sin número| ERF["Error: La contraseña debe contener al menos un número"]
+            ER3 -->|Sin carácter especial| ERG["Error: La contraseña debe contener al menos un carácter especial (!@#$%^&*)"]
+            ER3 -->|Contraseñas no coinciden| ERH["Error: Las contraseñas no coinciden"]
+            
+            ER1 --> ER4{"Validar Términos"}
+            ER4 -->|No aceptado| ERI["Error: Debe aceptar los Términos y Condiciones y el Aviso de Privacidad"]
+            
+            ERA --> ER5["Opciones: Iniciar Sesión | Recuperar Contraseña"]
+            ERB --> ER6["Campo: Correo marcado como error"]
+            ERC --> ER6
+            ERD --> ER7["Campo: Contraseña marcado como error"]
+            ERE --> ER7
+            ERF --> ER7
+            ERG --> ER7
+            ERH --> ER7
+            ERI --> ER8["Checkbox: Términos marcado como error"]
+        end
+
+        subgraph ERRORES_KYC["Errores en Verificación de Identidad"]
+            EK1["Usuario inicia verificación de identidad"] --> EK2{"Validar Documento de Identidad"}
+            EK2 -->|Documento borroso| EKA["Error: La imagen no es clara. Por favor, tome una foto más nítida"]
+            EK2 -->|Documento expirado| EKB["Error: El documento está expirado. Por favor, use un documento vigente"]
+            EK2 -->|Documento no soportado| EKC["Error: Este tipo de documento no está soportado. Use INE, Pasaporte o Cédula Profesional"]
+            EK2 -->|Datos no coinciden| EKD["Error: Los datos del documento no coinciden con la información proporcionada"]
+            EK2 -->|Documento fraudulento| EKE["Error: Se detectó posible fraude. Contacte a soporte para verificar su identidad"]
+            
+            EK1 --> EK3{"Validar Selfie Biometétrico"}
+            EK3 -->|Cara no detectada| EKFA["Error: No se detectó un rostro. Asegúrese de estar frente a la cámara"]
+            EK3 -->|Múltiples rostros| EKFB["Error: Se detectaron varios rostros. Solo debe aparecer una persona"]
+            EK3 -->|Iluminación insuficiente| EKFC["Error: La iluminación es insuficiente. Busque un lugar mejor iluminado"]
+            EK3 -->|Iluminación excesiva| EKFD["Error: La luz directa a la cámara dificulta la detección"]
+            EK3 -->|Biometría no coincide| EKFE["Error: La cara no coincide con la foto del documento"]
+            EK3 -->|Timeout de cámara| EKFF["Error: Tiempo de espera agotado. La cámara no respondió"]
+            
+            EK1 --> EK4{"Error de Sistema"}
+            EK4 -->|Servicio no disponible| EKG["Error: Servicio de verificación temporalmente no disponible. Intente más tarde"]
+            EK4 -->|Error de conexión| EKH["Error: Problema de conexión. Verifique su internet e intente de nuevo"]
+            EK4 -->|Límite de intentos| EKI["Error: Ha excedido el límite de intentos. Contacte a soporte"]
+            
+            EKA --> EK5["Reintentar: Captura de documento"]
+            EKB --> EK5
+            EKC --> EK5
+            EKD --> EK5
+            EKE --> EK6["Botón: Contactar Soporte"]
+            EKFA --> EK7["Reintentar: Captura de selfie"]
+            EKFB --> EK7
+            EKFC --> EK7
+            EKFD --> EK7
+            EKFE --> EK7
+            EKFF --> EK1
+            EKG --> EK1
+            EKH --> EK1
+            EKI --> EK6
+        end
+
+        subgraph ERRORES_DATOS["Errores en Datos Personales y Contacto"]
+            ED1["Usuario ingresa datos"] --> ED2{"Validar CURP"}
+            ED2 -->|Formato inválido| EDA["Error: El CURP debe tener 18 caracteres"]
+            ED2 -->|Checksum inválido| EDB["Error: El CURP no es válido"]
+            ED2 -->|Ya registrado| EDC["Error: Ya existe una cuenta con este CURP"]
+            
+            ED1 --> ED3{"Validar RFC"}
+            ED3 -->|Formato inválido| EDD["Error: El RFC debe tener 10 u 11 caracteres"]
+            ED3 -->|Checksum inválido| EDE["Error: El RFC no es válido"]
+            
+            ED1 --> ED4{"Validar Fecha de Nacimiento"}
+            ED4 -->|Fecha futura| EDF["Error: La fecha de nacimiento no puede ser futura"]
+            ED4 -->|Menor de 18| EDG["Error: Debes ser mayor de 18 años para abrir una cuenta"]
+            ED4 -->|Muy antiguo| EDH["Error: La fecha de nacimiento no es válida"]
+            
+            ED1 --> ED5{"Validar Dirección"}
+            ED5 -->|CP no encontrado| EDI["Error: No encontramos ese código postal. Verifique o ingréselo manualmente"]
+            ED5 -->|Dirección incompleta| EDJ["Error: Complete todos los campos de dirección"]
+            
+            ED1 --> ED6{"Validar Teléfono"}
+            ED6 -->|Formato inválido| EDK["Error: Ingrese un número de teléfono válido (10 dígitos)"]
+            ED6 -->|Teléfono ya registrado| EDL["Error: Este teléfono ya está registrado en otra cuenta"]
+            
+            EDA --> ED7["Campo: CURP marcado con error"]
+            EDB --> ED7
+            EDC --> ED7
+            EDD --> ED8["Campo: RFC marcado con error"]
+            EDE --> ED8
+            EDF --> ED9["Campo: Fecha marcado con error"]
+            EDG --> ED9
+            EDH --> ED9
+            EDI --> ED10["Campo: CP marcado con error"]
+            EDJ --> ED10
+            EDK --> ED11["Campo: Teléfono marcado con error"]
+            EDL --> ED11
+        end
+
+        subgraph ERRORES_SEGURIDAD["Errores en Configuración de Seguridad"]
+            ES1["Usuario configura seguridad"] --> ES2{"Validar PIN"}
+            ES2 -->|PINs no coinciden| ESA["Error: Los PINs no coinciden. Intente de nuevo"]
+            ES2 -->|PIN con secuencia| ESB["Error: El PIN no puede tener números consecutivos o repetidos (ej: 1234, 1111)"]
+            ES2 -->|PIN muy simple| ESC["Error: El PIN es muy simple. Use una combinación más segura"]
+            
+            ES1 --> ES3{"Validar Biometría"}
+            ES3 -->|No disponible| ESD["Error: Biometría no disponible en este dispositivo"]
+            ES3 -->|Huella no reconocida| ESE["Error: No se reconoció la huella. Limpie el sensor y intente de nuevo"]
+            ES3 -->|Face ID no funciona| ESF["Error: No se reconoció el rostro. Asegúrese de tener buena iluminación"]
+            ES3 -->|Demasiados intentos| ESG["Error: Demasiados intentos fallidos. Use el PIN como alternativa"]
+            
+            ES1 --> ES4{"Validar Preguntas de Seguridad"}
+            ES4 -->|Preguntas repetidas| ESH["Error: Seleccione preguntas diferentes"]
+            ES4 -->|Respuesta muy corta| ESI["Error: La respuesta debe tener al menos 3 caracteres"]
+            ES4 -->|Respuesta con caracteres inválidos| ESJ["Error: La respuesta no puede contener caracteres especiales"]
+            
+            ESA --> ES5["Reintentar: Ingreso de PIN"]
+            ESB --> ES5
+            ESC --> ES5
+            ESD --> ES6["Omitir biométria y usar solo PIN"]
+            ESE --> ES7["Reintentar: Registrar huella"]
+            ESF --> ES7
+            ESG --> ES6
+            ESH --> ES8["Selección de preguntas marquée con error"]
+            ESI --> ES9["Campo de respuesta marqué con error"]
+            ESJ --> ES9
+        end
+
+        subgraph ERRORES_ENVIO["Errores en Envío de Solicitud"]
+            EE1["Usuario envía solicitud"] --> EE2{"Procesar Solicitud"}
+            EE2 -->|Timeout del servidor| EEA["Error: Tiempo de espera agotado. Su solicitud fue guardada como borrador"]
+            EE2 -->|Error de base de datos| EEB["Error: Problema temporal. Intente en unos minutos"]
+            EE2 -->|Validación fallida| EEC["Error: Algunos datos no pasaron la validación final. Revise la información"]
+            EE2 -->|Cuenta duplicada| EED["Error: Ya existe una cuenta asociada a estos datos"]
+            EE2 -->|Riesgo detectado| EEE["Error: No pudimos procesar su solicitud. Contacte a soporte"]
+            
+            EEA --> EE3["Regresar a pantalla de revisión"]
+            EEB --> EE3
+            EEC --> EE4["Resaltar campos con problemas"]
+            EED --> EE5["Botón: Iniciar sesión con cuenta existente"]
+            EEE --> EE6["Botón: Contactar a soporte"]
+        end
+
+        subgraph ERRORES_RECHAZO["Escenarios de Rechazo"]
+            ERZ1["Solicitud procesada"] --> ERZ2{"Resultado de Análisis"}
+            ERZ2 -->|Perfil de riesgo alto| ERZA["Rechazo: Perfil de riesgo no permitido"]
+            ERZ2 -->|Documentación insuficiente| ERZB["Rechazo: Documentación insuficiente para verificar identidad"]
+            ERZ2 -->|Historial crediticio| ERZC["Rechazo: No cumple con los requisitos de historial crediticio"]
+            ERZ2 -->|Lista negra| ERZD["Rechazo: No es posible abrir cuenta por políticas de seguridad"]
+            ERZ2 -->|Menor de edad| ERZE["Rechazo: Debe ser mayor de 18 años"]
+            
+            ERZA --> ERZF["Mensaje: Puede contactar a soporte para más información"]
+            ERZB --> ERZF
+            ERZC --> ERZF
+            ERZD --> ERZF
+            ERZE --> ERZF
+        end
+
+        subgraph MANEJO_GENERAL["Manejo General de Errores"]
+            MG1["Cualquier Error"] --> MG2{"Tipo de Error"}
+            MG2 -->|Recuperable| MGA["Mostrar mensaje claro con acción de recuperación"]
+            MG2 -->|No recuperable| MGB["Mostrar mensaje con opción de contactar soporte"]
+            MG2 -->|Temporal| MGC["Ofrecer reintento automático o manual"]
+            
+            MGA --> MGD["Botón: Reintentar | Editar | Continuar"]
+            MGB --> MGE["Botón: Contactar Soporte | Volver al Inicio"]
+            MGC --> MGF["Spinner de carga | Botón de reintento"]
+            
+            MGD --> MG4["Acción seleccionada por usuario"]
+            MGE --> MG4
+            MGF --> MG4
+        end
+    end
+
+    style ERA fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style ERB fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style ERC fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EKA fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EKB fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EKC fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EKD fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EKE fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EKFE fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EDA fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EDB fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EDG fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style ESA fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EEA fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style EEE fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style ERZA fill:#ffcdd2,stroke:#b71c1c,stroke-width:2px
+    style ERZB fill:#ffcdd2,stroke:#b71c1c,stroke-width:2px
+    style ERZC fill:#ffcdd2,stroke:#b71c1c,stroke-width:2px
+    style ERZD fill:#ffcdd2,stroke:#b71c1c,stroke-width:2px
+    style ERZE fill:#ffcdd2,stroke:#b71c1c,stroke-width:2px
